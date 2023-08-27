@@ -1,3 +1,4 @@
+// Cloudinary Lib Import
 const { readdirSync } = require('fs');
 
 const express = require('express');
@@ -12,6 +13,7 @@ const cors = require('cors');
 // Database Lib Import
 const mongoose = require('mongoose');
 // read directory for routers
+
 const app = express();
 
 dotenv.config();
