@@ -12,7 +12,6 @@ const ListService = async (Request, DataModel, SearchArray) => {
       const SearchQuery = { $or: SearchArray };
       data = await DataModel.aggregate([
         { $match: SearchQuery },
-
         {
           $facet: {
             Total: [{ $count: 'count' }],

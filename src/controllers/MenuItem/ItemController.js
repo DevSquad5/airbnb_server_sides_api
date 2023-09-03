@@ -5,6 +5,9 @@ const OneJoinDetailsByIdService = require('../../services/common/OneJoinDetailsB
 const UpdateService = require('../../services/common/UpdateService');
 const ListOneJoinServiceCategory = require('../../services/common/ListOneJoinServiceCategory');
 const DeleteService = require('../../services/common/DeleteService');
+const ListOneJoinServiceByDateTime = require('../../services/common/ListOneJoinServiceByDateTime');
+const ListOneJoinServiceForPrice = require('../../services/common/ListOneJoinServiceForPrice');
+const ListOneJoinServicePrice = require('../../services/common/ListOneJoinServicePrice');
 
 exports.status = async (req, res) => {
   res.status(200)
@@ -107,5 +110,64 @@ exports.GetItemDetailsById = async (req, res) => {
     },
   };
   const Result = await OneJoinDetailsByIdService(req, DataModel, JoinStage);
+  res.status(200).json(Result);
+};
+
+exports.getByRegionAndDate = async (req, res) => {
+  const SearchRgx = { $regex: req.params.searchKeyword, $options: 'i' };
+  const JoinStage = {
+    $lookup: {
+      from: 'itemcategories',
+      localField: 'CategoryId',
+      foreignField: '_id',
+      as: 'category',
+    },
+  };
+  const SearchArray = [
+    { ItemName: SearchRgx },
+    { LocationValue: SearchRgx },
+    { Region: SearchRgx },
+    { 'category.ItemCategory': SearchRgx },
+  ];
+  const Result = await ListOneJoinServiceByDateTime(
+    req,
+    DataModel,
+    JoinStage,
+    SearchArray,
+  );
+  res.status(200).json(Result);
+};
+
+exports.filterPrices = async (req, res) => {
+  const JoinStage = {
+    $lookup: {
+      from: 'itemcategories',
+      localField: 'CategoryId',
+      foreignField: '_id',
+      as: 'category',
+    },
+  };
+  const Result = await ListOneJoinServiceForPrice(
+    req,
+    DataModel,
+    JoinStage,
+  );
+  res.status(200).json(Result);
+};
+
+exports.countItemFilterList = async (req, res) => {
+  const JoinStage = {
+    $lookup: {
+      from: 'itemcategories',
+      localField: 'CategoryId',
+      foreignField: '_id',
+      as: 'category',
+    },
+  };
+  const Result = await ListOneJoinServicePrice(
+    req,
+    DataModel,
+    JoinStage,
+  );
   res.status(200).json(Result);
 };
